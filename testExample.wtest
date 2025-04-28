@@ -1,9 +1,59 @@
-import example.pepita
+import example.*
 
-describe "group of tests for pepita" {
+describe "parte 1" {
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
+  test "roberto (90kg) puede llevar un paquete que está pago en un camión que tiene un acoplado." {
+    roberto.cambiarVehiculo(camion)
+    paquete.pagado()
+    assert.that(roberto.puedeEntregarPaquete(puenteBrooklyn))
+  }
+  test "neo con crédito no puede llevar un paquete que no está pago a la matrix." {
+    neo.tieneCredito()
+    paquete.noPagado()
+    assert.notThat(neo.puedeEntregarPaquete(matrix))
+  }
+
+}
+
+describe "parte 2" {
+
+  test "se contrata a un mensajero" {
+    mensajeria.contratar(neo)
+    assert.equals(1, mensajeria.mensajeros().size())
+  }
+  test "se despide a un mensajero luego de contratarlo" {
+    mensajeria.contratar(chuckNorris)
+    mensajeria.despedirA(chuckNorris)
+    assert.equals(0, mensajeria.mensajeros().size())
+  }
+  test "se contrata a 3 mensajeros y luego se los despide" {
+    mensajeria.contratar(neo)
+    mensajeria.contratar(chuckNorris)
+    mensajeria.contratar(roberto)
+    mensajeria.despedirATodos()
+    assert.equals(0, mensajeria.mensajeros().size())
+  }
+
+  test "se contrata a 3 mensajeros y la mensajeria se hace grande" {
+    mensajeria.contratar(neo)
+    mensajeria.contratar(chuckNorris)
+    mensajeria.contratar(roberto)
+    assert.that(mensajeria.esGrande())
+  }
+
+  test "el primer empleado de la mensajeria puede entregar un paquete pagado al puente de brooklyn, con un camion con un solo acoplado" {
+    paquete.pagado()
+    camion.acoplados(1)
+    roberto.cambiarVehiculo(camion)
+    mensajeria.contratar(roberto)
+    mensajeria.contratar(chuckNorris)
+    assert.that(mensajeria.puedeEntregarElPrimero(puenteBrooklyn))
+  }
+  test "se puede saber el peso del ultimo mensajero" {
+    mensajeria.contratar(roberto)
+    mensajeria.contratar(chuckNorris)
+    mensajeria.contratar(neo)
+    assert.equals(0, mensajeria.mensajeros().last().peso())
   }
 
 }

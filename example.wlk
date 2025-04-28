@@ -15,7 +15,7 @@ object chuckNorris {
   method peso() = 80
   method puedeLlamar() = true
   method puedeEntregarPaquete(lugar) {
-    return paquete.estaPago() && lugar.puedePasar(self)
+    return paquete.estaPago()  && lugar.puedePasar(self)
   }
 }
 
@@ -32,8 +32,11 @@ object neo {
 }
 object paquete {
   var estaPago = null
-  method estaPago()  {estaPago = true}
-  method noEstaPago() {estaPago = false}
+  method pagado()  {estaPago = true}
+  method noPagado() {estaPago = false}
+  method estaPago() = estaPago == true
+
+  
 }
 
 object bicicleta {
@@ -49,12 +52,24 @@ object camion{
 
 object puenteBrooklyn {
   method puedePasar(alguien) {
-    alguien.peso() <= 1000
+    return alguien.peso() <= 1000
   }
 }
 
 object matrix {
   method puedePasar(alguien) {
-    alguien.puedeLlamar()
+    return alguien.puedeLlamar()
   }
+}
+
+object mensajeria {
+  var mensajeros = []
+  method contratar(mensajero) = mensajeros.add(mensajero)
+  method despedirA(mensajero) = mensajeros.remove(mensajero)
+  method despedirATodos() = mensajeros.clear()
+  method esGrande() { return mensajeros.size() > 2}
+  method puedeEntregarElPrimero(lugar) { return mensajeros.first().puedeEntregarPaquete(lugar)}
+  method pesoDelUltimo() {mensajeros.last().peso()}
+  method mensajeros() = mensajeros
+
 }
