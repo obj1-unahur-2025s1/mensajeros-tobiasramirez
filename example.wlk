@@ -6,17 +6,13 @@ object roberto {
   method puedeLlamar() = false
   method vehiculo() = vehiculo
   method cambiarVehiculo(unVehiculo) {vehiculo = unVehiculo}
-  method puedeEntregarPaquete(lugar) {
-    return paquete.estaPago() && lugar.puedePasar(self)
-  }
+  
 }
 
 object chuckNorris {
   method peso() = 80
   method puedeLlamar() = true
-  method puedeEntregarPaquete(lugar) {
-    return paquete.estaPago()  && lugar.puedePasar(self)
-  }
+  
 }
 
 object neo {
@@ -25,17 +21,21 @@ object neo {
   method puedeLlamar() {self.tieneCredito()}
   method tieneCredito() = credito > 0
   method nuevoCredito(unCredito) {credito = unCredito}
-  method puedeEntregarPaquete(lugar) {
-    return paquete.estaPago() && lugar.puedePasar(self)
  
-  }
 }
 object paquete {
   var estaPago = null
+  var destino = null
   method pagado()  {estaPago = true}
   method noPagado() {estaPago = false}
-  method estaPago() = estaPago == true
-
+  method estaPago() = estaPago
+  method puedeSerEntregadoPor(mensajero) {
+    return self.estaPago() && destino.puedePasar(mensajero)
+ 
+  }
+  method destino() = destino
+  method nuevoDestino(nuevo) {destino = nuevo}
+  method precio() = 50
   
 }
 
@@ -63,13 +63,42 @@ object matrix {
 }
 
 object mensajeria {
-  var mensajeros = []
+  const mensajeros = []
+  const enviados = []
+  const pendientes = []
   method contratar(mensajero) = mensajeros.add(mensajero)
   method despedirA(mensajero) = mensajeros.remove(mensajero)
   method despedirATodos() = mensajeros.clear()
   method esGrande() { return mensajeros.size() > 2}
-  method puedeEntregarElPrimero(lugar) { return mensajeros.first().puedeEntregarPaquete(lugar)}
+  method puedeEntregarElPrimero(unPaquete) = unPaquete.puedeSerEntregadoPor(mensajeros.head())
   method pesoDelUltimo() {mensajeros.last().peso()}
   method mensajeros() = mensajeros
+  method quienesPuedenEntregar(unPaquete) = mensajeros.filter({m=>unPaquete.puedeSerEntregadoPor(m)})
+  method algunoPuedeEntregar(unPaquete) = mensajeros.any({m=> unPaquete.puedeSerEntregadoPor(m)}) 
+  method tieneSobrepeso() {if (mensajeros.isEmpty()) false else self.pesoTotal() / mensajeros.size() > 500 }
+  method pesoTotal() = mensajeros.sum({m=>m.peso()})
+  
 
+}
+
+object paquetito {
+  var destino = null
+  method estaPago()= true
+  method puedeSerEntregadoPor(mensajero) = true
+   
+  method precio() = 0
+  method destino() = destino
+  method nuevoDestino(nuevo) {destino = nuevo}
+}
+
+object paqueton {
+  var pagado = null
+  const destinos = [matrix, puenteBrooklyn]
+  method estaPago() {return pagado >= self.precio()} 
+  method precio() = destinos.size() * 100
+  method pagar(importe) {pagado = pagado + importe}
+  method pasaPorTodos(alguien) = destinos.all({d=>d.puedePasar(alguien)})
+  method puedeSerEntregadoPor(mensajero) {
+    return self.estaPago() and self.pasaPorTodos(mensajero)
+  }
 }
