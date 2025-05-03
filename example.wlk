@@ -18,7 +18,7 @@ object chuckNorris {
 object neo {
   var credito = 10
   method peso() = 0
-  method puedeLlamar() {self.tieneCredito()}
+  method puedeLlamar() {return self.tieneCredito()}
   method tieneCredito() = credito > 0
   method nuevoCredito(unCredito) {credito = unCredito}
  
@@ -77,8 +77,26 @@ object mensajeria {
   method algunoPuedeEntregar(unPaquete) = mensajeros.any({m=> unPaquete.puedeSerEntregadoPor(m)}) 
   method tieneSobrepeso() {if (mensajeros.isEmpty()) false else self.pesoTotal() / mensajeros.size() > 500 }
   method pesoTotal() = mensajeros.sum({m=>m.peso()})
+  method enviarPaquete(unPaquete) {
+    if (self.algunoPuedeEntregar(unPaquete)) {
+      enviados.add(unPaquete)
+    } else{
+      pendientes.add(unPaquete)
+    }
+  }
+  method facturacionTotal() = enviados.sum({p=>p.precio()})
   
-
+  method enviarlosATodos(paquetesAEnviar) {
+    paquetesAEnviar.forEach({p=>p.enviarPaquete(p)})
+    enviados.add(paquetesAEnviar)
+  }
+  method enviarPendienteCaro() {
+    const caro = self.pendienteCaro()
+    pendientes.remove(caro)
+    self.enviarPaquete(caro)
+  }
+  method pendienteCaro() = pendientes.max({p=>p.precio()})
+    
 }
 
 object paquetito {
@@ -102,3 +120,20 @@ object paqueton {
     return self.estaPago() and self.pasaPorTodos(mensajero)
   }
 }
+object paquetePremium {
+  var estaPago = null
+  const destinos = [matrix, puenteBrooklyn]
+  method estaPago() = estaPago
+  method precio() = destinos.size() * 1000
+  method pagar() {estaPago = true}
+  method puedeSerEntregadoPor(mensajero) {
+    return self.estaPago() and mensajero.peso() == 100 and  mensajero.puedeLlamar()
+  }
+
+}
+object jose {
+method peso() = 100
+method puedeLlamar() = true
+
+}
+
